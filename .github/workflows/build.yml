@@ -58,14 +58,23 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install cmake ninja
+          brew install cmake ninja sdl2
+
+      - name: Build non-native targets
+        run: |
+          mkdir build-non-native
+          cd build-non-native
+          cat ../CMakeLists.txt
+          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=rpipico -DCMAKE_TOOLCHAIN_FILE=../Platform/MTL/rpipico/toolchain.cmake -DCMAKE_PREFIX_PATH=/usr/local/opt/sdl2 ..
+          cmake --build .
+          ls -l Source/*.uf2
 
       - name: Build native target
         run: |
           mkdir build-native
           cd build-native
           cat ../CMakeLists.txt
-          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native ..
+          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_PREFIX_PATH=/usr/local/opt/sdl2 ..
           cmake --build .
 
       - name: Upload artifacts
@@ -73,5 +82,6 @@ jobs:
         with:
           name: build-artifacts-mac
           path: |
+                 build-non-native/Source/*.uf2
                  build-native/Source/picoX7*
                  build-native/docs/Research/exp_dx7
