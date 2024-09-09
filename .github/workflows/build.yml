@@ -65,7 +65,7 @@ jobs:
           mkdir build-non-native
           cd build-non-native
           cat ../CMakeLists.txt
-          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=rpipico -DCMAKE_TOOLCHAIN_FILE=../Platform/MTL/rpipico/toolchain.cmake -DCMAKE_PREFIX_PATH=/usr/local/opt/sdl2 -DCMAKE_CXX_COMPILER=/usr/local/bin/arm-none-eabi-g++ -DCMAKE_C_COMPILER=/usr/local/bin/arm-none-eabi-gcc -DCMAKE_ASM_COMPILER=/usr/local/bin/arm-none-eabi-as ..
+          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=rpipico -DCMAKE_TOOLCHAIN_FILE=../Platform/MTL/rpipico/toolchain.cmake -DCMAKE_PREFIX_PATH=/usr/local/opt/sdl2 -DCMAKE_CXX_COMPILER=/usr/local/bin/arm-none-eabi-g++ -DCMAKE_C_COMPILER=/usr/local/bin/arm-none-eabi-gcc -DCMAKE_ASM_COMPILER=/usr/local/bin/arm-none-eabi-as -DCMAKE_CXX_FLAGS="-isystem /usr/local/include" ..
           cmake --build .
           ls -l Source/*.uf2
 
@@ -74,7 +74,7 @@ jobs:
           mkdir build-native
           cd build-native
           cat ../CMakeLists.txt
-          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_PREFIX_PATH=/usr/local/opt/sdl2 -DCMAKE_CXX_COMPILER=/usr/local/bin/arm-none-eabi-g++ -DCMAKE_C_COMPILER=/usr/local/bin/arm-none-eabi-gcc -DCMAKE_ASM_COMPILER=/usr/local/bin/arm-none-eabi-as ..
+          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_PREFIX_PATH=/usr/local/opt/sdl2 -DCMAKE_CXX_COMPILER=/usr/local/bin/arm-none-eabi-g++ -DCMAKE_C_COMPILER=/usr/local/bin/arm-none-eabi-gcc -DCMAKE_ASM_COMPILER=/usr/local/bin/arm-none-eabi-as -DCMAKE_CXX_FLAGS="-isystem /usr/local/include" ..
           cmake --build .
 
       - name: Upload artifacts
