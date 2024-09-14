@@ -62,7 +62,7 @@ jobs:
       - name: Build native ARM targets in QEMU
         run: |
           mkdir build-native-arm
-          sudo cp $(which qemu-arm) /mnt/usr/bin
+          sudo cp $(which qemu-system-arm) /mnt/usr/bin
           sudo cp /etc/resolv.conf /mnt/etc/
           sudo chroot /mnt /bin/bash -c "cd /repository && cmake -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/mnt/repository . && make -C /repository/build-native-arm"
           sudo chroot /mnt /bin/bash -c "file /repository/build-native-arm/Source/picoX7_NATIVE"
