@@ -52,7 +52,7 @@ jobs:
 
       - name: Create rootfs
         run: |
-          sudo debootstrap --arch armhf --variant minbase buster /mnt
+          sudo debootstrap --arch armhf --variant minbase focal /mnt
           sudo mount -o bind /dev /mnt/dev
           sudo mount -o bind /proc /mnt/proc
           sudo mount -o bind /sys /mnt/sys
