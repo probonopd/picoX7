@@ -57,7 +57,7 @@ jobs:
           sudo mount -o bind /proc /mnt/proc
           sudo mount -o bind /sys /mnt/sys
           sudo mkdir -p /mnt/repository
-          sudo mount -o bind /github/workspace /mnt/repository
+          sudo mount -o bind $(pwd) /mnt/repository
 
       - name: Build native ARM targets in QEMU
         run: |
