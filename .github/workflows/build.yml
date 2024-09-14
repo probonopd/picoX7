@@ -59,7 +59,7 @@ jobs:
           mkdir build-native-arm
           cd build-native-arm
           cat ../CMakeLists.txt
-          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_CXX_COMPILER=/usr/bin/arm-linux-gnueabihf-g++ -DCMAKE_ASM_COMPILER=/usr/bin/arm-linux-gnueabihf-gcc -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/mnt ..
+          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/mnt ..
           cmake --build .
           cp /usr/bin/qemu-arm-static Source/
           ./Source/picoX7
