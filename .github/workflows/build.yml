@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libsdl2-dev:armhf libsdl2-dev cmake qemu-system-arm qemu-user-static
+          sudo apt-get install -y libsdl2-dev cmake
 
       - name: Build non-native targets
         run: |
@@ -47,13 +47,19 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf libsdl2-dev:armhf libsdl2-dev cmake qemu-system-arm qemu-user-static
+          sudo apt-get install -y build-essential libsdl2-dev cmake qemu-system-arm qemu-user-static debootstrap
+      - name: Create rootfs
+        run: |
+          sudo debootstrap --arch armhf --variant minbase buster /mnt
+          sudo mount -o bind /dev /mnt/dev
+          sudo mount -o bind /proc /mnt/proc
+          sudo mount -o bind /sys /mnt/sys
       - name: Build native ARM targets in QEMU
         run: |
           mkdir build-native-arm
           cd build-native-arm
           cat ../CMakeLists.txt
-          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_CXX_COMPILER=/usr/bin/arm-linux-gnueabihf-g++ -DCMAKE_ASM_COMPILER=/usr/bin/arm-linux-gnueabihf-gcc -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/usr/arm-linux-gnueabihf ..
+          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_CXX_COMPILER=/usr/bin/arm-linux-gnueabihf-g++ -DCMAKE_ASM_COMPILER=/usr/bin/arm-linux-gnueabihf-gcc -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/mnt ..
           cmake --build .
           cp /usr/bin/qemu-arm-static Source/
           ./Source/picoX7
@@ -62,33 +68,12 @@ jobs:
         with:
           name: build-artifacts-native-arm
           path: build-native-arm/Source/picoX7*
-
-  build-native-aarch64:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          submodules: true
-      - name: Install dependencies
+      - name: Clean up rootfs
         run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libsdl2-dev cmake qemu-system-aarch64 qemu-user-static
-      - name: Build native AArch64 targets in QEMU
-        run: |
-          mkdir build-native-aarch64
-          cd build-native-aarch64
-          cat ../CMakeLists.txt
-          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++ -DCMAKE_ASM_COMPILER=/usr/bin/aarch64-linux-gnu-gcc -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/usr/aarch64-linux-gnu ..
-          cmake --build .
-          cp /usr/bin/qemu-aarch64-static Source/
-          ./Source/picoX7
-      - name: Upload native AArch64 artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-artifacts-native-aarch64
-          path: build-native-aarch64/Source/picoX7*
+          sudo umount /mnt/dev
+          sudo umount /mnt/proc
+          sudo umount /mnt/sys
+          sudo rm -rf /mnt
 
   build-native-x86_64:
     runs-on: ubuntu-20.04
