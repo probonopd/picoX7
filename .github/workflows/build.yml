@@ -18,27 +18,8 @@ jobs:
   
       - name: Install dependencies
         run: |
-          echo "deb [arch=amd64,i386] http://azure.archive.ubuntu.com/ubuntu focal main restricted" | sudo tee -a /etc/apt/sources.list
-          echo "deb [arch=amd64,i386] http://azure.archive.ubuntu.com/ubuntu focal-updates main restricted" | sudo tee -a /etc/apt/sources.list
-          echo "deb [arch=amd64,i386] http://azure.archive.ubuntu.com/ubuntu focal universe" | sudo tee -a /etc/apt/sources.list
-          echo "deb [arch=amd64,i386] http://azure.archive.ubuntu.com/ubuntu focal-updates universe" | sudo tee -a /etc/apt/sources.list
-          echo "deb [arch=amd64,i386] http://azure.archive.ubuntu.com/ubuntu focal multiverse" | sudo tee -a /etc/apt/sources.list
-          echo "deb [arch=amd64,i386] http://azure.archive.ubuntu.com/ubuntu focal-updates multiverse" | sudo tee -a /etc/apt/sources.list
-          echo "deb [arch=amd64,i386] http://azure.archive.ubuntu.com/ubuntu focal-backports main restricted universe multiverse" | sudo tee -a /etc/apt/sources.list
-          echo "deb [arch=amd64,i386] http://security.ubuntu.com/ubuntu focal-security main restricted" | sudo tee -a /etc/apt/sources.list
-          echo "deb [arch=amd64,i386] http://security.ubuntu.com/ubuntu focal-security universe" | sudo tee -a /etc/apt/sources.list
-          echo "deb [arch=amd64,i386] http://security.ubuntu.com/ubuntu focal-security multiverse" | sudo tee -a /etc/apt/sources.list
-          sudo mkdir -p /etc/apt/sources.list.d
-          echo "deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports focal main universe" | sudo tee /etc/apt/sources.list.d/armhf.list
-          echo "deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports focal-updates main universe" | sudo tee -a /etc/apt/sources.list.d/armhf.list
-          echo "deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports focal-security main universe" | sudo tee -a /etc/apt/sources.list.d/armhf.list
-          echo "deb [arch=aarch64] http://ports.ubuntu.com/ubuntu-ports focal main universe" | sudo tee /etc/apt/sources.list.d/aarch64.list
-          echo "deb [arch=aarch64] http://ports.ubuntu.com/ubuntu-ports focal-updates main universe" | sudo tee -a /etc/apt/sources.list.d/aarch64.list
-          echo "deb [arch=aarch64] http://ports.ubuntu.com/ubuntu-ports focal-security main universe" | sudo tee -a /etc/apt/sources.list.d/aarch64.list
           sudo apt-get update
-          sudo dpkg --add-architecture armhf
-          sudo dpkg --add-architecture aarch64
-          sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libsdl2-dev:armhf libsdl2-dev cmake # libsdl2-dev:arm64
+          sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libsdl2-dev:armhf libsdl2-dev cmake qemu-system-arm qemu-user-static
 
       - name: Build non-native targets
         run: |
@@ -49,29 +30,110 @@ jobs:
           cmake --build .
           ls -l Source/*.uf2
 
-      - name: Build native targets
+      - name: Upload non-native artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts-non-native
+          path: build-non-native/Source/*.uf2
+
+  build-native-arm:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: true
+      - name: Build native ARM targets in QEMU
         run: |
-          mkdir -p build-native-arm build-native-aarch64 build-native-x86_64
+          mkdir build-native-arm
           cd build-native-arm
           cat ../CMakeLists.txt
           cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_CXX_COMPILER=/usr/bin/arm-linux-gnueabihf-g++ -DCMAKE_ASM_COMPILER=/usr/bin/arm-linux-gnueabihf-gcc -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/usr/arm-linux-gnueabihf ..
           cmake --build .
-          # cd ../build-native-aarch64
-          # cat ../CMakeLists.txt
-          # cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++ -DCMAKE_ASM_COMPILER=/usr/bin/aarch64-linux-gnu-gcc -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/usr/aarch64-linux-gnu ..
-          # cmake --build .
-          cd ../build-native-x86_64
+          cp /usr/bin/qemu-arm-static Source/
+          ./Source/picoX7
+      - name: Upload native ARM artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts-native-arm
+          path: build-native-arm/Source/picoX7*
+
+  build-native-aarch64:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: true
+      - name: Build native AArch64 targets in QEMU
+        run: |
+          mkdir build-native-aarch64
+          cd build-native-aarch64
+          cat ../CMakeLists.txt
+          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++ -DCMAKE_ASM_COMPILER=/usr/bin/aarch64-linux-gnu-gcc -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/usr/aarch64-linux-gnu ..
+          cmake --build .
+          cp /usr/bin/qemu-aarch64-static Source/
+          ./Source/picoX7
+      - name: Upload native AArch64 artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts-native-aarch64
+          path: build-native-aarch64/Source/picoX7*
+
+  build-native-x86_64:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: true
+      - name: Build native x86_64 targets
+        run: |
+          mkdir build-native-x86_64
+          cd build-native-x86_64
           cat ../CMakeLists.txt
           cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_CXX_COMPILER=g++ -DCMAKE_ASM_COMPILER=gcc -DCMAKE_PREFIX_PATH=/usr ..
           cmake --build .
+      - name: Upload native x86_64 artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts-native-x86_64
+          path: build-native-x86_64/Source/picoX7*
 
-      - name: Upload artifacts
+  upload-artifacts:
+    runs-on: ubuntu-20.04
+    needs: [build, build-native-arm, build-native-aarch64, build-native-x86_64]
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts-non-native
+          path: build-non-native
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts-native-arm
+          path: build-native-arm
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts-native-aarch64
+          path: build-native-aarch64
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts-native-x86_64
+          path: build-native-x86_64
+      - name: Upload combined artifacts
         uses: actions/upload-artifact@v3
         with:
           name: build-artifacts
           path: |
                  build-non-native/Source/*.uf2
                  build-native-arm/Source/picoX7*
-                 # build-native-aarch64/Source/picoX7*
+                 build-native-aarch64/Source/picoX7*
                  build-native-x86_64/Source/picoX7*
                  build-native/docs/Research/exp_dx7
