@@ -62,10 +62,6 @@ jobs:
       - name: Build native ARM targets in QEMU
         run: |
           mkdir build-native-arm
-          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/mnt ..
-          make
-
-          # Build within a chroot environment using QEMU
           sudo cp $(which qemu-arm) /mnt/usr/bin
           sudo cp /etc/resolv.conf /mnt/etc/
           sudo chroot /mnt /bin/bash -c "cd /repository && cmake -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/mnt/repository . && make -C /repository/build-native-arm"
