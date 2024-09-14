@@ -48,7 +48,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential libsdl2-dev cmake qemu-system-arm qemu-user-static debootstrap
+          sudo apt-get install -y qemu-system-arm qemu-user-static debootstrap
 
       - name: Create rootfs
         run: |
@@ -64,6 +64,8 @@ jobs:
           mkdir build-native-arm
           sudo cp $(which qemu-system-arm) /mnt/usr/bin
           sudo cp /etc/resolv.conf /mnt/etc/
+          sudo chroot /mnt /bin/bash -c "apt-get -y update"
+          sudo chroot /mnt /bin/bash -c "apt-get -y install build-essential libsdl2-dev cmake"
           sudo chroot /mnt /bin/bash -c "cd /repository && cmake -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/mnt/repository . && make -C /repository/build-native-arm"
           sudo chroot /mnt /bin/bash -c "file /repository/build-native-arm/Source/picoX7_NATIVE"
           
