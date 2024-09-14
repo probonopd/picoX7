@@ -56,6 +56,7 @@ jobs:
           sudo mount -o bind /dev /mnt/dev
           sudo mount -o bind /proc /mnt/proc
           sudo mount -o bind /sys /mnt/sys
+          sudo mount --rbind /github/workspace /mnt/repository
 
       - name: Build native ARM targets in QEMU
         run: |
@@ -66,8 +67,8 @@ jobs:
           # Build within a chroot environment using QEMU
           sudo cp $(which qemu-arm) /mnt/usr/bin
           sudo cp /etc/resolv.conf /mnt/etc/
-          sudo chroot /mnt /bin/bash -c "cmake -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/mnt .. && make"
-          sudo chroot /mnt /bin/bash -c "file Source/picoX7_NATIVE"
+          sudo chroot /mnt /bin/bash -c "cd /repository && cmake -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/mnt/repository . && make -C /repository/build-native-arm"
+          sudo chroot /mnt /bin/bash -c "file /repository/build-native-arm/Source/picoX7_NATIVE"
           
       - name: Upload native ARM artifacts
         uses: actions/upload-artifact@v3
@@ -79,7 +80,8 @@ jobs:
         run: |
           sudo umount /mnt/dev
           sudo umount /mnt/proc
-          sudo umount /mnt/sys
+          sudo umount /mnt/sys 
+          sudo umount /mnt/repository
           # sudo rm -rf /mnt
 
   build-native-x86_64:
