@@ -61,11 +61,12 @@ jobs:
           cat ../CMakeLists.txt
           cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/mnt ..
           cmake --build .
+          file Source/picoX7_NATIVE
       - name: Upload native ARM artifacts
         uses: actions/upload-artifact@v3
         with:
           name: build-artifacts-native-arm
-          path: build-native-arm/Source/picoX7*
+          path: build-native-arm/Source/picoX7_NATIVE
       - name: Clean up rootfs
         run: |
           sudo umount /mnt/dev
