@@ -61,8 +61,6 @@ jobs:
           cat ../CMakeLists.txt
           cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/mnt ..
           cmake --build .
-          cp /usr/bin/qemu-arm-static Source/
-          ./Source/picoX7
       - name: Upload native ARM artifacts
         uses: actions/upload-artifact@v3
         with:
