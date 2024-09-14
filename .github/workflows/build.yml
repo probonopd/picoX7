@@ -38,7 +38,7 @@ jobs:
           sudo apt-get update
           sudo dpkg --add-architecture armhf
           sudo dpkg --add-architecture aarch64
-          sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libsdl2-dev:armhf libsdl2-dev:aarch64 libsdl2-dev cmake
+          sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libsdl2-dev:armhf libsdl2-dev:arm64 libsdl2-dev cmake
 
       - name: Build non-native targets
         run: |
