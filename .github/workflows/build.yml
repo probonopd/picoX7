@@ -37,17 +37,22 @@ jobs:
           mkdir -p build-native-arm build-native-aarch64 build-native-x86_64
           cd build-native-arm
           cat ../CMakeLists.txt
-          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_CXX_COMPILER=arm-linux-gnueabihf-g++ -DCMAKE_ASM_COMPILER=arm-linux-gnueabihf-gcc ..
+          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_CXX_COMPILER=/usr/bin/arm-linux-gnueabihf-g++ -DCMAKE_ASM_COMPILER=/usr/bin/arm-linux-gnueabihf-gcc -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/usr/arm-linux-gnueabihf ..
           cmake --build .
-
+      
           cd ../build-native-aarch64
           cat ../CMakeLists.txt
-          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++ -DCMAKE_ASM_COMPILER=aarch64-linux-gnu-gcc ..
+          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++ -DCMAKE_ASM_COMPILER=/usr/bin/aarch64-linux-gnu-gcc -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/usr/aarch64-linux-gnu ..
           cmake --build .
-
+      
           cd ../build-native-x86_64
           cat ../CMakeLists.txt
-          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_CXX_COMPILER=g++ ..
+          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_CXX_COMPILER=g++ -DCMAKE_ASM_COMPILER=gcc -DCMAKE_PREFIX_PATH=/usr ..
+          cmake --build .
+      
+          cd ../build-native-arm32
+          cat ../CMakeLists.txt
+          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DCMAKE_CXX_COMPILER=/usr/bin/arm-linux-gnueabi-g++ -DCMAKE_ASM_COMPILER=/usr/bin/arm-linux-gnueabi-gcc -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/usr/arm-linux-gnueabi ..
           cmake --build .
 
       - name: Upload artifacts
