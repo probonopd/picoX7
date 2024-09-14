@@ -64,6 +64,9 @@ jobs:
           mkdir build-native-arm
           sudo cp $(which qemu-system-arm) /mnt/usr/bin
           sudo cp /etc/resolv.conf /mnt/etc/
+          sudo chroot /mnt apt-get update
+          sudo chroot /mnt apt-get install -y software-properties-common
+          sudo chroot /mnt add-apt-repository universe
           sudo chroot /mnt /bin/bash -c "apt-get -y update"
           sudo chroot /mnt /bin/bash -c "apt-get -y install build-essential libsdl2-dev cmake"
           sudo chroot /mnt /bin/bash -c "cd /repository && cmake -DCMAKE_PREFIX_PATH=/usr -DCMAKE_FIND_ROOT_PATH=/mnt/repository . && make -C /repository/build-native-arm"
