@@ -44,6 +44,10 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf libsdl2-dev:armhf libsdl2-dev cmake qemu-system-arm qemu-user-static
       - name: Build native ARM targets in QEMU
         run: |
           mkdir build-native-arm
@@ -67,6 +71,10 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libsdl2-dev cmake qemu-system-aarch64 qemu-user-static
       - name: Build native AArch64 targets in QEMU
         run: |
           mkdir build-native-aarch64
@@ -90,6 +98,10 @@ jobs:
         with:
           fetch-depth: 0
           submodules: true
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libsdl2-dev
       - name: Build native x86_64 targets
         run: |
           mkdir build-native-x86_64
@@ -102,38 +114,3 @@ jobs:
         with:
           name: build-artifacts-native-x86_64
           path: build-native-x86_64/Source/picoX7*
-
-  upload-artifacts:
-    runs-on: ubuntu-20.04
-    needs: [build, build-native-arm, build-native-aarch64, build-native-x86_64]
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifacts-non-native
-          path: build-non-native
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifacts-native-arm
-          path: build-native-arm
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifacts-native-aarch64
-          path: build-native-aarch64
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifacts-native-x86_64
-          path: build-native-x86_64
-      - name: Upload combined artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-artifacts
-          path: |
-                 build-non-native/Source/*.uf2
-                 build-native-arm/Source/picoX7*
-                 build-native-aarch64/Source/picoX7*
-                 build-native-x86_64/Source/picoX7*
-                 build-native/docs/Research/exp_dx7
