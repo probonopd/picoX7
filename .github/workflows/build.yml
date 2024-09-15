@@ -73,8 +73,7 @@ jobs:
           # /usr/lib/aarch64-linux-gnu/cmake/ for ARM 64 bit
           sudo chroot /mnt /bin/bash -c "cd /repository/build-native-arm && cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=native -DSDL2_DIR=/usr/lib/arm-linux-gnueabihf/cmake/SDL2/ -DCMAKE_FIND_ROOT_PATH=/mnt/repository .."
           sudo chroot /mnt /bin/bash -c "cd /repository/build-native-arm && cmake --build ."
-          sudo chroot /mnt /bin/bash -c "file /repository/build-native-arm/Source/picoX7_NATIVE"
-          
+ 
       - name: Upload native ARM artifacts
         uses: actions/upload-artifact@v3
         with:
