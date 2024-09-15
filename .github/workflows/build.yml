@@ -26,7 +26,8 @@ jobs:
           mkdir build-non-native
           cd build-non-native
           cat ../CMakeLists.txt
-          cmake -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=rpipico -DCMAKE_TOOLCHAIN_FILE=../Platform/MTL/rpipico/toolchain.cmake ..
+          # /usr/lib/aarch64-linux-gnu/cmake/SDL2/ for ARM 64 bit
+          cmake -DCMAKE_PREFIX_PATH=/usr/lib/arm-linux-gnueabihf/cmake/SDL2/ -DCMAKE_BUILD_TYPE=Release -DPLT_TARGET=rpipico -DCMAKE_TOOLCHAIN_FILE=../Platform/MTL/rpipico/toolchain.cmake ..
           cmake --build .
           ls -l Source/*.uf2
 
