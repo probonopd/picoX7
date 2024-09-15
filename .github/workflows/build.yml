@@ -71,7 +71,7 @@ jobs:
           sudo chroot /mnt /bin/bash -c "apt-get -y update"
           sudo chroot /mnt /bin/bash -c "apt-get -y install build-essential libsdl2-dev cmake"
           # /usr/lib/aarch64-linux-gnu/cmake/ for ARM 64 bit
-          sudo chroot /mnt /bin/bash -c "cd /repository && cmake -DCMAKE_PREFIX_PATH=/usr/lib/arm-linux-gnueabihf/cmake/ -DCMAKE_FIND_ROOT_PATH=/mnt/repository . && make -C /repository/build-native-arm"
+          sudo chroot /mnt /bin/bash -c "cd /repository && cmake -DSDL2_DIR=/usr/lib/arm-linux-gnueabihf/cmake/SDL2/ -DCMAKE_FIND_ROOT_PATH=/mnt/repository . && make -C /repository/build-native-arm"
           sudo chroot /mnt /bin/bash -c "file /repository/build-native-arm/Source/picoX7_NATIVE"
           
       - name: Upload native ARM artifacts
