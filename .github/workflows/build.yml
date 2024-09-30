@@ -24,6 +24,7 @@ jobs:
       - name: Patch i2c address to 0x27
         run: |
           sed -i -e 's|HW_LCD_I2C_ADDR 0x3E|HW_LCD_I2C_ADDR 0x27|g' Source/picoX7.cpp
+          grep -r HW_LCD_I2C_ADDR Source/
           
       - name: Build non-native targets
         run: |
