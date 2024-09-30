@@ -20,7 +20,11 @@ jobs:
         run: |
             sudo apt-get update
             sudo apt-get install -y gcc-arm-none-eabi ninja-build libsdl2-dev cmake
-
+            
+      - name: Patch i2c address to 0x27
+        run: |
+          sed -i -e 's|HW_LCD_I2C_ADDR 0x3E|HW_LCD_I2C_ADDR 0x27|g' Source/picoX7.cpp
+          
       - name: Build non-native targets
         run: |
           mkdir build-non-native
